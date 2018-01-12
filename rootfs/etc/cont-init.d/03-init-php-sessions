@@ -2,7 +2,9 @@
 
 # if production mode enable opcache
 if [ "${BUILD_ENV}" = "prod" ]; then
-echo -e "; Enable php opcache to make site faster \n\
+echo -e "; Don't display errors in production \n\
+display_errors = Off \n\
+; Enable php opcache to make site faster \n\
 [opcache] \n\
 opcache.enable = 1 \n\
 opcache.enable_cli = 1 \n\
@@ -15,7 +17,9 @@ opcache.interned_strings_buffer = 8 \n\
 opcache.max_accelerated_files = 4000 \n\
 opcache.revalidate_freq = 31556926"   >> /etc/php7/php-fpm.ini; 
 else 
-echo -e "[opcache] \n\
+echo -e "; Don't display errors in production \n\
+display_errors = On \n\
+[opcache] \n\
 opcache.enable = 0 \n\
 opcache.revalidate_freq = 1"  >> /etc/php7/php-fpm.ini
 fi
