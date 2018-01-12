@@ -94,6 +94,9 @@ COPY rootfs/ /
 ENV TERM="xterm" \
     PORT="80" \
     CRONLOCK_HOST="" \
+    BUILD_ENV="prod" \
+    INSTALL_PICO="true" \
+    PICOCMS_VERSION="2.0.0-beta.1" \
     WEB_ROOT="/var/www/picocms/" \
     NGINX_INCLUDE_DIR="/var/www/nginx" \
     NGINX_MAX_BODY_SIZE="64M" \
