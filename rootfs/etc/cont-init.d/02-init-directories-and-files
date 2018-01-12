@@ -24,11 +24,6 @@ touch /var/log/php/error.log
 # Give picocms user access to all log files
 chown -R picocms:web /var/log/
 
-# if not production mode disable opcache
-if [ "${BUILD_ENV}" = "" ]; then
-echo "opcache.enabled = 0"  >> /etc/php7/php-fpm.ini
-fi
-
 # install pico if optioned
 if [ "${INSTALL_PICO}" = "true" ]; then 
 curl -o picocms.tar.gz -SL https://github.com/picocms/Pico/releases/download/v${PICOCMS_VERSION}/pico-release-v${PICOCMS_VERSION}.tar.gz 

@@ -1,5 +1,27 @@
 #!/usr/bin/with-contenv bash
 
+# if production mode enable opcache
+if [ "${BUILD_ENV}" = "prod" ]; then
+echo -e "; Enable php opcache to make site faster \n\
+[opcache] \n\
+opcache.enable = 1 \n\
+opcache.enable_cli = 1 \n\
+opcache.fast_shutdown = 1 \n\
+opcache.memory_consumption = 128 \n\
+; Log opcache warnings \n\
+opcache.log_verbosity_level = 2 \n\
+opcache.error_log = /proc/self/fd/2 \n\
+opcache.interned_strings_buffer = 8 \n\
+opcache.max_accelerated_files = 4000 \n\
+opcache.revalidate_freq = 31556926"   >> /etc/php7/php-fpm.ini; 
+else 
+echo -e "[opcache] \n\
+opcache.enable = 0 \n\
+opcache.revalidate_freq = 1"  >> /etc/php7/php-fpm.ini
+fi
+
+
+
 # Setup sessions
 echo "; This file contains php session backend (default: files)" > /etc/php7/conf.d/sessions.ini
 
