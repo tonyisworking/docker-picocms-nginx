@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+echo "[services.d] started nginx"
+# Run nginx processes as picocms:web
+nginx

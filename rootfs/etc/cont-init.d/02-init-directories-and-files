@@ -1,0 +1,37 @@
+#!/usr/bin/with-contenv bash
+
+# Create dir for nginx tmp files
+if [ ! -d /tmp/nginx/body ] ; then
+  mkdir -p /tmp/nginx/body
+fi
+chown picocms:web /tmp/nginx
+chown picocms:web /tmp/nginx/body
+
+# Create log directories if they don't exist already
+if [ ! -d /var/log/nginx ] ; then
+  mkdir -p /var/log/nginx
+fi
+if [ ! -d /var/log/php ] ; then
+  mkdir -p /var/log/php
+fi
+if [ ! -d /var/log/mail ] ; then
+  mkdir -p /var/log/mail
+fi
+
+# Create log directory for php
+touch /var/log/php/error.log
+
+# Give picocms user access to all log files
+chown -R picocms:web /var/log/
+
+# if not production mode disable opcache
+if [ "${BUILD_ENV}" = "" ]; then
+echo "opcache.enabled = 0"  >> /etc/php7/php-fpm.ini
+fi
+
+# install pico if optioned
+if [ "${INSTALL_PICO}" = "true" ]; then 
+curl -o picocms.tar.gz -SL https://github.com/picocms/Pico/releases/download/v${PICOCMS_VERSION}/pico-release-v${PICOCMS_VERSION}.tar.gz 
+  tar -xzf picocms.tar.gz -C /var/www/picocms 
+  rm /var/www/picocms/picocms.tar.gz
+fi 
