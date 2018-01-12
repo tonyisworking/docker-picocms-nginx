@@ -22,9 +22,10 @@ RUN apk add --update curl bash git openssh-client nano nginx ca-certificates \
     ##
     apk upgrade -U \
     && apk add --update-cache --repository=http://dl-4.alpinelinux.org/alpine/edge/testing/ \
-    php7-pdo_mysql php7-mysqli php7-mysqlnd php7-mcrypt php7-tokenizer \
-    php7 php7-session php7-fpm php7-json php7-zlib php7-xml php7-simplexml php7-pdo php7-xmlwriter\
-    php7-gd php7-curl php7-opcache php7-ctype php7-mbstring php7-soap php7-pdo_sqlite php7-sqlite3 php7-yaml \
+    php7 php7-fpm php7-json php7-zlib php7-opcache php7-mbstring php7-yaml \
+    php7-pdo_mysql php7-mysqli php7-mysqlnd php7-pdo php7-pdo_sqlite php7-sqlite3 \
+    php7-gd php7-session php7-curl php7-ctype php7-soap \
+    php7-xml php7-simplexml php7-xmlwriter php7-mcrypt php7-tokenizer \
     php7-intl php7-bcmath php7-dom php7-xmlreader php7-openssl php7-phar php7-zip && \
 
     # Small fixes to php & nginx
@@ -77,7 +78,6 @@ RUN apk add --update curl bash git openssh-client nano nginx ca-certificates \
     curl -L -sS https://getcomposer.org/installer | \
     php -- --install-dir=/usr/local/bin --filename=composer && \
     chmod +rx /usr/local/bin/composer && \
-    # composer parallel install plugin
     composer global require hirak/prestissimo && \
 
     # Remove cache and tmp files
