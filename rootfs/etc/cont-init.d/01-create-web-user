@@ -1,77 +1,77 @@
 #!/usr/bin/with-contenv bash
 
+
 ##
-# If picocms user and web group already exists just skip the user creation
+# If ${WEB_USER} and ${WEB_GROUP} already exists just skip the user creation
 ##
-if id -u picocms > /dev/null 2>&1 && getent group web  > /dev/null 2>&1; then
-    echo "[cont-init.d] user:picocms and group:web already exists, skipping..."
+if id -u "$WEB_USER" > /dev/null 2>&1 && getent group "$WEB_GROUP"  > /dev/null 2>&1; then
+    echo "[cont-init.d] user:$WEB_USER and group:$WEB_GROUP already exists, skipping..."
     exit 0
 fi
 
  
 ##
-# Create picocms user with $UID and web group with $GID
+# Create user with $N_UID and  group with $N_GID
 ##
 
 # If permissions were not defined get GID/UID from web files
-if [ -z "$WP_UID" ]; then
-  WP_UID=$(ls -n $WEB_ROOT | tail -n1 | xargs echo | cut -d' ' -f3)
+if [ -z "$N_UID" ]; then
+  N_UID=$(ls -n "$WEB_ROOT" | tail -n1 | xargs echo | cut -d' ' -f3)
 fi
 
-if [ -z "$WP_GID" ]; then
-  WP_GID=$(ls -n $WEB_ROOT | tail -n1 | xargs echo | cut -d' ' -f4)
+if [ -z "$N_GID" ]; then
+  N_GID=$(ls -n "$WEB_ROOT" | tail -n1 | xargs echo | cut -d' ' -f4)
 fi
 
 # If web files were owned by root use 100:101 as permissions instead
-if [ "$WP_GID" = "0" ] ||  [ "$WP_GID" = "" ]  || [ "$WP_UID" = "0" ]; then
+if [ "$N_GID" = "0" ] ||  [ "$N_GID" = "" ]  || [ "$N_UID" = "0" ]; then
 
   echo "[cont-init.d] ERROR: Your web root files are owned by root. I'm running processes as uid/gid 100:101 instead"
 
   # These are default if container was accidentally mounted with root owned files
-  WP_UID=100
-  WP_GID=101
+  N_UID=100
+  N_GID=101
 fi
 
-echo "[cont-init.d] Creating picocms user with id: $WP_UID and group web with id: $WP_GID"
+echo "[cont-init.d] Creating $WEB_USER user with id: $N_UID and group $WEB_GROUP with id: $N_GID"
 
 # Create web group
-if [ -n "$WP_GID" ]; then
+if [ -n "$N_GID" ]; then
 
-  # Check if group with $GID already exists
-  web_group=$(getent group $WP_GID | cut -d':' -f1)
+  # Check if group with $N_GID already exists
+  old_web_group=$(getent group $N_GID | cut -d':' -f1)
 
-  if [ -n "$web_group" ]; then
+  if [ -n "$old_web_group" ]; then
 
     # Replace the existing group name to web
     # This is done so that in local development we can just lookup permissions from mounted folders
     # This UID/GID can be same as something already existing inside container
     # This way we can use same uid/gid in container and host machine
 
-    echo "[cont-init.d] Replacing pre-existing group name $web_group -> web"
-    sed -i "s|$web_group|web|g" /etc/group
+    echo "[cont-init.d] Replacing pre-existing group name $old_web_group -> $WEB_GROUP"
+    sed -i "s|$old_web_group|$WEB_GROUP|g" /etc/group
 
     # We just changed this in /etc/group remember?
-    web_group="web"
+    $old_web_group="$WEB_GROUP"
 
   else
     # Create new group
-    web_group="web"
-    addgroup -g $WP_GID $web_group
+    addgroup -g $N_GID $WEB_GROUP
   fi
 else
   echo "[cont-init.d] ERROR: Please set correct permissions into $WEB_ROOT" 1>&2
   exit 2
 fi
 
-# Create picocms user
-if [ -n "$WP_UID" ] && [ -n "$WP_GID" ] ; then
-  web_user="picocms"
-  adduser -G $web_group -u $WP_UID -h $WEB_ROOT -SD $web_user
+# Create new user
+if [ -n "$N_UID" ] && [ -n "$N_GID" ] ; then
+  web_user="$WEB_USER"
+  adduser -G $WEB_GROUP -u $N_UID -h $WEB_ROOT -SD $WEB_USER
 else
   echo "[cont-init.d] ERROR: Please set correct permissions into $WEB_ROOT" 1>&2
   exit 2
 fi
 
 # Check that processes can write logs
-chown picocms:web /var/log
-chown picocms:web /var/www/picocms
+chown "$WEB_USER":"$WEB_GROUP" /var/log
+chown "$WEB_USER":"$WEB_GROUP" "$WEB_ROOT"

@@ -4,8 +4,9 @@
 if [ ! -d /tmp/nginx/body ] ; then
   mkdir -p /tmp/nginx/body
 fi
-chown picocms:web /tmp/nginx
-chown picocms:web /tmp/nginx/body
+
+chown "$WEB_USER":"$WEB_GROUP" /tmp/nginx
+chown "$WEB_USER":"$WEB_GROUP" /tmp/nginx/body
 
 # Create log directories if they don't exist already
 if [ ! -d /var/log/nginx ] ; then
@@ -21,12 +22,11 @@ fi
 # Create log directory for php
 touch /var/log/php/error.log
 
-# Give picocms user access to all log files
-chown -R picocms:web /var/log/
+# Give  user access to all log files
+chown -R "$WEB_USER":"$WEB_GROUP" /var/log/
 
-# install pico if optioned
-if [ "${INSTALL_PICO}" = "true" ]; then 
-curl -o picocms.tar.gz -SL https://github.com/picocms/Pico/releases/download/v${PICOCMS_VERSION}/pico-release-v${PICOCMS_VERSION}.tar.gz 
-  tar -xzf picocms.tar.gz -C /var/www/picocms 
-  rm /var/www/picocms/picocms.tar.gz
+# install CMS if optioned
+if [ "${INSTALL_CMS}" = "true" ]; then 
+curl -o cms.tar.gz -SL "$CMS_GZIP_URL"
+  tar -xzf cms.tar.gz -C $WEB_ROOT
 fi 

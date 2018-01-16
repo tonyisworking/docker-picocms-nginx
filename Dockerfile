@@ -49,7 +49,6 @@ RUN apk add --update curl bash git openssh-client nano nginx ca-certificates \
     rm -rf /var/www/localhost && \
 
     # Create Folders
-    mkdir -p /var/www/picocms && \ 
     mkdir -p /var/www/nginx && \
     mkdir -p /var/www/nginx/server && \
     mkdir -p /var/www/nginx/http && \
@@ -95,9 +94,11 @@ ENV TERM="xterm" \
     PORT="80" \
     CRONLOCK_HOST="" \
     BUILD_ENV="prod" \
-    INSTALL_PICO="true" \
-    PICOCMS_VERSION="2.0.0-beta.1" \
+    INSTALL_CMS="true" \
+    CMS_GZIP_URL="https://github.com/picocms/Pico/releases/download/v2.0.0-beta.1/pico-release-v2.0.0-beta.1.tar.gz" \
     WEB_ROOT="/var/www/picocms/" \
+    WEB_USER="picocms" \
+    WEB_GROUP="web" \
     NGINX_INCLUDE_DIR="/var/www/nginx" \
     NGINX_MAX_BODY_SIZE="64M" \
     NGINX_FASTCGI_TIMEOUT="30" \
@@ -105,6 +106,7 @@ ENV TERM="xterm" \
     SMTP_HOST="127.0.0.1" \
     TZ="UTC"
 
+RUN mkdir ${WEB_ROOT}
 
 WORKDIR ${WEB_ROOT}
 EXPOSE ${PORT}
